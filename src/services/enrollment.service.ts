@@ -1,35 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateEnrollmentDTO } from 'src/controllers/dtos/create-enrollment.dto';
 import { Enrollment } from 'src/entities/enrollment.entity';
-import { Repository } from 'typeorm';
+import { StudentService } from './student.service';
+import { CourseService } from './course.service';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class EnrollmentService {
-  mockEnrollments: Enrollment[] = [
-    {
-      studentID: 'U02463323',
-      studentName: 'John Doe',
-      courseID: 'CSC 436',
-      title: 'Software Engineering',
-      enrollmentID: 1,
-    },
-    {
-      studentID: 'U02463323',
-      studentName: 'Jane Doe',
-      courseID: 'CSC 437',
-      title: 'Software Testing',
-      enrollmentID: 2,
-    },
-    {
-      studentID: 'U02463323',
-      studentName: 'John Smith',
-      courseID: 'CSC 438',
-      title: 'Software Project Management',
-      enrollmentID: 3,
-    },
-  ];
+  mockEnrollments: Enrollment[] = [];
 
-  constructor() {}
+  constructor(
+    private readonly studentService: StudentService,
+    private readonly courseService: CourseService,
+  ) {}
 
   async getAllEnrollments(): Promise<Enrollment[]> {
     return this.mockEnrollments;
@@ -53,14 +36,48 @@ export class EnrollmentService {
     );
   }
 
-  async createEnrollment(enrollment: Enrollment): Promise<Enrollment> {
-    this.mockEnrollments.push(enrollment);
-    return enrollment;
+  async createEnrollment(enrollment: CreateEnrollmentDTO): Promise<Enrollment> {
+    const isStudentEnrolled = await this.isStudentEnrolled(
+      enrollment.studentID,
+      enrollment.courseID,
+    );
+
+    if (isStudentEnrolled) throw new NotFoundException('Student is enrolled');
+
+    const student = await this.studentService.getStudentByID(
+      enrollment.studentID,
+    );
+    if (!student) throw new NotFoundException('Student not found');
+
+    const course = await this.courseService.getCourseByID(enrollment.courseID);
+    if (!course) throw new NotFoundException('Course not found');
+
+    const newEnrollment: Enrollment = {
+      enrollmentID: this.mockEnrollments.length + 1,
+      studentID: enrollment.studentID,
+      studentName: student.studentName,
+      courseID: enrollment.courseID,
+      courseTitle: course.title,
+    };
+
+    this.mockEnrollments.push(newEnrollment);
+
+    return newEnrollment;
   }
 
   async deleteEnrollment(enrollmentID: number): Promise<void> {
     this.mockEnrollments = this.mockEnrollments.filter(
       (enrollment) => enrollment.enrollmentID !== enrollmentID,
+    );
+  }
+
+  private async isStudentEnrolled(
+    studentID: string,
+    courseID: string,
+  ): Promise<boolean> {
+    return this.mockEnrollments.some(
+      (enrollment) =>
+        enrollment.studentID === studentID && enrollment.courseID === courseID,
     );
   }
 }

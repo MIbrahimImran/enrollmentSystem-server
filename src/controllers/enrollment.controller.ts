@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
 import { Enrollment } from 'src/entities/enrollment.entity';
 import { EnrollmentService } from 'src/services/enrollment.service';
+import { CreateEnrollmentDTO } from './dtos/create-enrollment.dto';
 
 @Controller('enrollments')
 export class EnrollmentController {
@@ -33,7 +34,9 @@ export class EnrollmentController {
   }
 
   @Post()
-  async createEnrollment(@Body() enrollment: Enrollment): Promise<Enrollment> {
+  async createEnrollment(
+    @Body() enrollment: CreateEnrollmentDTO,
+  ): Promise<Enrollment> {
     return this.enrollmentService.createEnrollment(enrollment);
   }
 

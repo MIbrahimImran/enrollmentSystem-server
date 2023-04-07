@@ -1,30 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Course } from 'src/entities/course.entity';
 
 @Injectable()
 export class CourseService {
-  mockCourses: Course[] = [
-    {
-      courseID: 'CSC 436',
-      title: 'Software Engineering',
-      instructor: 'Dr. Kiper',
-      credits: 3,
-    },
-    {
-      courseID: 'CSC 437',
-      title: 'Software Testing',
-      instructor: 'Dr. Kiper',
-      credits: 3,
-    },
-    {
-      courseID: 'CSC 438',
-      title: 'Software Project Management',
-      instructor: 'Dr. Kiper',
-      credits: 3,
-    },
-  ];
-
-  constructor() {}
+  mockCourses: Course[] = [];
 
   async getAllCourses(): Promise<Course[]> {
     return this.mockCourses;
@@ -45,6 +24,8 @@ export class CourseService {
   }
 
   async createCourse(course: Course): Promise<Course> {
+    const isUnique = await this.isCourseIDUnique(course.courseID);
+    if (!isUnique) throw new ConflictException('Course ID already exists');
     this.mockCourses.push(course);
     return course;
   }
@@ -53,5 +34,9 @@ export class CourseService {
     this.mockCourses = this.mockCourses.filter(
       (course) => course.courseID !== courseID,
     );
+  }
+
+  private async isCourseIDUnique(courseID: string): Promise<boolean> {
+    return this.mockCourses.every((course) => course.courseID !== courseID);
   }
 }
