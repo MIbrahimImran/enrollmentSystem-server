@@ -21,8 +21,8 @@ export class StudentController {
   @Get('/name/:studentName')
   async getStudentByName(
     @Param('studentName') studentName: string,
-  ): Promise<Student> {
-    return this.studentService.getStudentByName(studentName);
+  ): Promise<Student[]> {
+    return this.studentService.getStudentsByName(studentName);
   }
 
   @Post()

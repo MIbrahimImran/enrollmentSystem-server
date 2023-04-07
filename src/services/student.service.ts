@@ -15,7 +15,7 @@ export class StudentService {
     },
     {
       studentID: 'U02463323',
-      studentName: 'Jane Doe',
+      studentName: 'John Doe',
       major: 'Computer Science',
       email: 'example@example.com',
       password: 'abc123@',
@@ -31,9 +31,9 @@ export class StudentService {
     return this.mockStudents.find((student) => student.studentID === studentID);
   }
 
-  async getStudentByName(studentName: string): Promise<Student> {
-    return this.mockStudents.find(
-      (student) => student.studentName === studentName,
+  async getStudentsByName(studentName: string): Promise<Student[]> {
+    return this.mockStudents.filter((student) =>
+      student.studentName.includes(studentName),
     );
   }
 
