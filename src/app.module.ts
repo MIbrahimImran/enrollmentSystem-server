@@ -14,17 +14,17 @@ import { CourseController } from './controllers/course.controller';
 
 @Module({
   imports: [
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql',
-    //   host: 'localhost',
-    //   port: 3306,
-    //   username: 'your_username',
-    //   password: 'your_password',
-    //   database: 'your_database',
-    //   entities: [Course, Student, Enrollment],
-    //   synchronize: true,
-    // }),
-    // TypeOrmModule.forFeature([Course, Student, Enrollment]),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: '127.0.0.1',
+      port: 3306,
+      username: 'ibrahim',
+      password: '0321',
+      database: 'enrollmentsystem',
+      entities: [Course, Student, Enrollment],
+      synchronize: true,
+    }),
+    TypeOrmModule.forFeature([Course, Student, Enrollment]),
   ],
   controllers: [
     AppController,

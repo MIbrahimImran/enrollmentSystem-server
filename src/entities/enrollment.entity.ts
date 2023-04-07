@@ -9,11 +9,5 @@ export class Enrollment {
   studentID: string;
 
   @Column({ type: 'varchar', length: 255 })
-  studentName: string;
-
-  @Column({ type: 'varchar', length: 255 })
   courseID: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  courseTitle: string;
 }
