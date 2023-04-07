@@ -15,5 +15,5 @@ export class Enrollment {
   courseID: string;
 
   @Column({ type: 'varchar', length: 255 })
-  title: string;
+  courseTitle: string;
 }
