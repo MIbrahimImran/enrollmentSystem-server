@@ -2,12 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { createStudentDTO } from 'src/dtos/create-student.dto';
 import { Student } from 'src/entities/student.entity';
 import { EntityManager } from 'typeorm';
+import { EnrollmentService } from './enrollment.service';
 
 @Injectable()
 export class StudentService {
   mockStudents: Student[] = [];
 
-  constructor(private entityManager: EntityManager) {}
+  constructor(
+    private entityManager: EntityManager,
+    private readonly enrollmentService: EnrollmentService,
+  ) {}
 
   async getAllStudents(): Promise<Student[]> {
     return await this.entityManager.query(`
@@ -69,6 +73,7 @@ export class StudentService {
   }
 
   async deleteStudent(studentID: string): Promise<void> {
+    await this.enrollmentService.deleteEnrollmentsByStudentID(studentID);
     return await this.entityManager.query(
       `
       DELETE FROM students

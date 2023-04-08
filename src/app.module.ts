@@ -16,11 +16,11 @@ import { CourseController } from './controllers/course.controller';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: '127.0.0.1',
       port: 3306,
-      username: 'yourusername',
-      password: 'yourpassword',
-      database: 'yourdatabasename',
+      username: 'ibrahim',
+      password: '0321',
+      database: 'enrollmentsystem',
       entities: [Course, Student, Enrollment],
       synchronize: true,
     }),
