@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Enrollment } from 'src/entities/enrollment.entity';
 import { EntityManager } from 'typeorm';
 import { CreateEnrollmentDTO } from 'src/dtos/create-enrollment.dto';
 import { EnrollmentDTO } from 'src/dtos/enrollment-dto';
