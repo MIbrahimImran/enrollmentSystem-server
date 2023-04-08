@@ -1,10 +1,14 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { Course } from 'src/entities/course.entity';
 import { EntityManager } from 'typeorm';
+import { EnrollmentService } from './enrollment.service';
 
 @Injectable()
 export class CourseService {
-  constructor(private entityManager: EntityManager) {}
+  constructor(
+    private entityManager: EntityManager,
+    private readonly enrollmentService: EnrollmentService,
+  ) {}
 
   async getAllCourses(): Promise<Course[]> {
     return await this.entityManager.query(`
@@ -64,6 +68,7 @@ export class CourseService {
   }
 
   async deleteCourse(courseID: string): Promise<void> {
+    this.enrollmentService.deleteEnrollmentsByCourseID(courseID);
     await this.entityManager.query(
       `
       DELETE FROM courses

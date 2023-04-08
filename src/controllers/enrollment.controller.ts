@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
 import { CreateEnrollmentDTO } from 'src/dtos/create-enrollment.dto';
 import { EnrollmentDTO } from 'src/dtos/enrollment-dto';
-import { Enrollment } from 'src/entities/enrollment.entity';
 import { EnrollmentService } from 'src/services/enrollment.service';
 
 @Controller('enrollments')
@@ -25,6 +24,13 @@ export class EnrollmentController {
     @Param('studentName') studentName: string,
   ): Promise<EnrollmentDTO[]> {
     return this.enrollmentService.getEnrollmentsByStudent(studentName);
+  }
+
+  @Get('/studentID/:studentID')
+  async getEnrollmentsByStudentID(
+    @Param('studentID') studentID: string,
+  ): Promise<EnrollmentDTO[]> {
+    return this.enrollmentService.getEnrollmentsByStudentID(studentID);
   }
 
   @Get('/course/:courseID')

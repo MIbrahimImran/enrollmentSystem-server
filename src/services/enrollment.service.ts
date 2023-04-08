@@ -70,6 +70,26 @@ export class EnrollmentService {
     );
   }
 
+  async getEnrollmentsByStudentID(studentID: string): Promise<EnrollmentDTO[]> {
+    return await this.entityManager.query(
+      `
+      SELECT e.enrollmentID,
+              s.studentID,
+              s.studentName,
+              s.email as studentEmail,
+              c.courseID,
+              c.title as courseTitle,
+              c.instructor as courseInstructor,
+              c.credits as courseCredit
+      FROM enrollments e
+      JOIN students s ON e.studentID = s.studentID
+      JOIN courses c ON e.courseID = c.courseID
+      WHERE s.studentID = ?
+    `,
+      [studentID],
+    );
+  }
+
   async getEnrollmentsByCourseID(courseID: string): Promise<EnrollmentDTO[]> {
     return await this.entityManager.query(
       `
@@ -160,6 +180,34 @@ export class EnrollmentService {
       WHERE enrollmentID = ?
     `,
       [enrollmentID],
+    );
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Enrollment not found');
+    }
+  }
+
+  async deleteEnrollmentsByStudentID(studentID: string): Promise<void> {
+    const result = await this.entityManager.query(
+      `
+      DELETE FROM enrollments
+      WHERE studentID = ?
+    `,
+      [studentID],
+    );
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Enrollment not found');
+    }
+  }
+
+  async deleteEnrollmentsByCourseID(courseID: string): Promise<void> {
+    const result = await this.entityManager.query(
+      `
+      DELETE FROM enrollments
+      WHERE courseID = ?
+    `,
+      [courseID],
     );
 
     if (result.affected === 0) {
