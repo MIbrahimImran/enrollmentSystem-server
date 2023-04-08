@@ -130,7 +130,7 @@ export class EnrollmentService {
     const course = await this.courseService.getCourseByID(enrollment.courseID);
     if (!course) throw new NotFoundException('Course not found');
 
-    await this.entityManager.query(
+    const response = await this.entityManager.query(
       `
       INSERT INTO enrollments (studentID, courseID)
       VALUES (?, ?)
@@ -138,24 +138,7 @@ export class EnrollmentService {
       [enrollment.studentID, enrollment.courseID],
     );
 
-    const [newEnrollment] = await this.entityManager.query(
-      `
-      SELECT e.enrollmentID,
-             s.studentID,
-             s.studentName,
-             s.email as studentEmail,
-             c.courseID,
-             c.title as courseTitle,
-             c.instructor as courseInstructor,
-             c.credits as courseCredit
-      FROM enrollments e
-      JOIN students s ON e.studentID = s.studentID
-      JOIN courses c ON e.courseID = c.courseID
-      WHERE e.enrollmentID = LAST_INSERT_ID()
-    `,
-    );
-
-    return newEnrollment;
+    return await this.getEnrollmentByID(response.insertId);
   }
 
   async isStudentEnrolled(
