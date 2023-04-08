@@ -28,7 +28,6 @@ export class StudentController {
 
   @Post()
   async createStudent(@Body() student: createStudentDTO): Promise<Student> {
-    console.log(student);
     return this.studentService.createStudent(student);
   }
 
