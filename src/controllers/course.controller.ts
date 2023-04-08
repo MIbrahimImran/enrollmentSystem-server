@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  Body,
+  Put,
+} from '@nestjs/common';
 import { Course } from 'src/entities/course.entity';
 import { CourseService } from 'src/services/course.service';
 
@@ -36,6 +44,11 @@ export class CourseController {
   @Post()
   async createCourse(@Body() course: Course): Promise<Course> {
     return this.courseService.createCourse(course);
+  }
+
+  @Put('/update')
+  async updateCourse(@Body() course: Course): Promise<Course> {
+    return this.courseService.updateCourse(course);
   }
 
   @Delete('/:courseID')

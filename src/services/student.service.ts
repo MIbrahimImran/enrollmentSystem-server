@@ -18,6 +18,16 @@ export class StudentService {
     `);
   }
 
+  async getStudentCount(): Promise<number> {
+    const result = await this.entityManager.query(
+      `
+      SELECT COUNT(*) as count
+      FROM students
+    `,
+    );
+    return result[0].count;
+  }
+
   async getStudentByID(studentID: string): Promise<Student> {
     return await this.entityManager.query(
       `
@@ -70,14 +80,21 @@ export class StudentService {
     return newStudent;
   }
 
-  async getStudentCount(): Promise<number> {
+  async updateStudent(student: Student): Promise<Student> {
     const result = await this.entityManager.query(
       `
-      SELECT COUNT(*) as count
-      FROM students
+      UPDATE students
+      SET studentName = ?, major = ?
+      WHERE studentID = ?
     `,
+      [student.studentName, student.major, student.studentID],
     );
-    return result[0].count;
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Student not found');
+    }
+
+    return student;
   }
 
   async deleteStudent(studentID: string): Promise<void> {

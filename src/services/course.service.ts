@@ -19,6 +19,16 @@ export class CourseService {
     `);
   }
 
+  async getCourseCount(): Promise<number> {
+    const result = await this.entityManager.query(
+      `
+      SELECT COUNT(*) AS count
+      FROM courses
+    `,
+    );
+    return result[0].count;
+  }
+
   async getCoursesByInstructor(instructor: string): Promise<Course[]> {
     return await this.entityManager.query(
       `
@@ -69,14 +79,21 @@ export class CourseService {
     return course;
   }
 
-  async getCourseCount(): Promise<number> {
-    const result = await this.entityManager.query(
+  async updateCourse(course: Course): Promise<Course> {
+    if (!(await this.getCourseByID(course.courseID))) {
+      throw new NotFoundException('Course not found');
+    }
+
+    await this.entityManager.query(
       `
-      SELECT COUNT(*) AS count
-      FROM courses
+      UPDATE courses
+      SET title = ?, instructor = ?, credits = ?
+      WHERE courseID = ?
     `,
+      [course.title, course.instructor, course.credits, course.courseID],
     );
-    return result[0].count;
+
+    return course;
   }
 
   async deleteCourse(courseID: string): Promise<void> {
