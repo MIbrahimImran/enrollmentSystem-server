@@ -12,6 +12,11 @@ export class EnrollmentController {
     return this.enrollmentService.getAllEnrollments();
   }
 
+  @Get('/count')
+  async getEnrollmentCount(): Promise<number> {
+    return this.enrollmentService.getEnrollmentCount();
+  }
+
   @Get('/:enrollmentID')
   async getEnrollmentByID(
     @Param('enrollmentID') enrollmentID: number,

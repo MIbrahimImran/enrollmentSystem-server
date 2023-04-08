@@ -11,6 +11,11 @@ export class CourseController {
     return this.courseService.getAllCourses();
   }
 
+  @Get('/count')
+  async getCourseCount(): Promise<number> {
+    return this.courseService.getCourseCount();
+  }
+
   @Get('/:courseID')
   async getCourseByID(@Param('courseID') courseID: string): Promise<Course> {
     return this.courseService.getCourseByID(courseID);

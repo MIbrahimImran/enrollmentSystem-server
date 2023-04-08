@@ -70,6 +70,16 @@ export class StudentService {
     return newStudent;
   }
 
+  async getStudentCount(): Promise<number> {
+    const result = await this.entityManager.query(
+      `
+      SELECT COUNT(*) as count
+      FROM students
+    `,
+    );
+    return result[0].count;
+  }
+
   async deleteStudent(studentID: string): Promise<void> {
     await this.deleteEnrollmentsByStudentID(studentID);
     return await this.entityManager.query(

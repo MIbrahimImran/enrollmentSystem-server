@@ -69,6 +69,16 @@ export class CourseService {
     return course;
   }
 
+  async getCourseCount(): Promise<number> {
+    const result = await this.entityManager.query(
+      `
+      SELECT COUNT(*) AS count
+      FROM courses
+    `,
+    );
+    return result[0].count;
+  }
+
   async deleteCourse(courseID: string): Promise<void> {
     this.deleteEnrollmentsByCourseID(courseID);
     await this.entityManager.query(

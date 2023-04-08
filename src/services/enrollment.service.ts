@@ -156,6 +156,15 @@ export class EnrollmentService {
     return result.length > 0;
   }
 
+  async getEnrollmentCount(): Promise<number> {
+    const result = await this.entityManager.query(
+      `
+      SELECT COUNT(*) as count FROM enrollments
+    `,
+    );
+    return result[0].count;
+  }
+
   async deleteEnrollment(enrollmentID: number): Promise<void> {
     const result = await this.entityManager.query(
       `
