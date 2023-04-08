@@ -24,6 +24,11 @@ export class CourseController {
     return this.courseService.getCourseCount();
   }
 
+  @Get('/top-enrollments/:n')
+  async getTopNCoursesByEnrollment(@Param('n') n: string): Promise<Course[]> {
+    return this.courseService.getTopNCoursesByEnrollment(n);
+  }
+
   @Get('/:courseID')
   async getCourseByID(@Param('courseID') courseID: string): Promise<Course> {
     return this.courseService.getCourseByID(courseID);

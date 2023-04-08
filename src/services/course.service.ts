@@ -63,6 +63,26 @@ export class CourseService {
     );
   }
 
+  async getTopNCoursesByEnrollment(n: string): Promise<Course[]> {
+    const parsedN = parseInt(n, 10);
+
+    return await this.entityManager.query(
+      `
+      SELECT c.courseID,
+              c.title,
+              c.instructor,
+              c.credits,
+              COUNT(e.enrollmentID) as enrollmentCount
+      FROM enrollments e
+      JOIN courses c ON e.courseID = c.courseID
+      GROUP BY c.courseID
+      ORDER BY enrollmentCount DESC
+      LIMIT ?
+    `,
+      [parsedN],
+    );
+  }
+
   async createCourse(course: Course): Promise<Course> {
     if (await this.getCourseByID(course.courseID)) {
       throw new ConflictException('Course already exists');
