@@ -12,6 +12,11 @@ export class StudentController {
     return this.studentService.getAllStudents();
   }
 
+  @Get('/count')
+  async getStudentCount(): Promise<number> {
+    return this.studentService.getStudentCount();
+  }
+
   @Get('/:studentID')
   async getStudentByID(
     @Param('studentID') studentID: string,
