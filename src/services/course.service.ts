@@ -1,42 +1,75 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { Course } from 'src/entities/course.entity';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class CourseService {
-  mockCourses: Course[] = [];
+  constructor(private entityManager: EntityManager) {}
 
   async getAllCourses(): Promise<Course[]> {
-    return this.mockCourses;
+    return await this.entityManager.query(`
+      SELECT *
+      FROM courses
+    `);
   }
 
   async getCoursesByInstructor(instructor: string): Promise<Course[]> {
-    return this.mockCourses.filter(
-      (course) => course.instructor === instructor,
+    return await this.entityManager.query(
+      `
+      SELECT *
+      FROM courses
+      WHERE instructor = ?
+    `,
+      [instructor],
     );
   }
 
   async getCourseByID(courseID: string): Promise<Course> {
-    return this.mockCourses.find((course) => course.courseID === courseID);
+    const result = await this.entityManager.query(
+      `
+      SELECT *
+      FROM courses
+      WHERE courseID = ?
+    `,
+      [courseID],
+    );
+    return result[0];
   }
 
   async getCoursesByTitle(title: string): Promise<Course[]> {
-    return this.mockCourses.filter((course) => course.title === title);
+    return await this.entityManager.query(
+      `
+      SELECT *
+      FROM courses
+      WHERE title = ?
+    `,
+      [title],
+    );
   }
 
   async createCourse(course: Course): Promise<Course> {
-    const isUnique = await this.isCourseIDUnique(course.courseID);
-    if (!isUnique) throw new ConflictException('Course ID already exists');
-    this.mockCourses.push(course);
+    if (await this.getCourseByID(course.courseID)) {
+      throw new ConflictException('Course already exists');
+    }
+
+    await this.entityManager.query(
+      `
+      INSERT INTO courses (courseID, title, instructor, credits)
+      VALUES (?, ?, ?, ?)
+    `,
+      [course.courseID, course.title, course.instructor, course.credits],
+    );
+
     return course;
   }
 
   async deleteCourse(courseID: string): Promise<void> {
-    this.mockCourses = this.mockCourses.filter(
-      (course) => course.courseID !== courseID,
+    await this.entityManager.query(
+      `
+      DELETE FROM courses
+      WHERE courseID = ?
+    `,
+      [courseID],
     );
-  }
-
-  private async isCourseIDUnique(courseID: string): Promise<boolean> {
-    return this.mockCourses.every((course) => course.courseID !== courseID);
   }
 }

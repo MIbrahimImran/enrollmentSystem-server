@@ -16,4 +16,7 @@ export class Student {
 
   @Column({ type: 'varchar', length: 255 })
   password: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  role: string;
 }

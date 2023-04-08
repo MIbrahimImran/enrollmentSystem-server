@@ -1,22 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { createStudentDTO } from 'src/controllers/dtos/create-student.dto';
+import { createStudentDTO } from 'src/dtos/create-student.dto';
 import { Student } from 'src/entities/student.entity';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class StudentService {
   mockStudents: Student[] = [];
 
+  constructor(private entityManager: EntityManager) {}
+
   async getAllStudents(): Promise<Student[]> {
-    return this.mockStudents;
+    return await this.entityManager.query(`
+      SELECT *
+      FROM students
+    `);
   }
 
   async getStudentByID(studentID: string): Promise<Student> {
-    return this.mockStudents.find((student) => student.studentID === studentID);
+    return await this.entityManager.query(
+      `
+      SELECT *
+      FROM students
+      WHERE studentID = ?
+    `,
+      [studentID],
+    );
   }
 
   async getStudentsByName(studentName: string): Promise<Student[]> {
-    return this.mockStudents.filter((student) =>
-      student.studentName.includes(studentName),
+    return await this.entityManager.query(
+      `
+      SELECT *
+      FROM students
+      WHERE studentName = ?
+    `,
+      [studentName],
     );
   }
 
@@ -31,25 +49,37 @@ export class StudentService {
       password,
       ...student,
     };
-    this.mockStudents.push(newStudent);
+
+    await this.entityManager.query(
+      `
+      INSERT INTO students (studentID, email, password, studentName, major, role)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `,
+      [
+        newStudent.studentID,
+        newStudent.email,
+        newStudent.password,
+        newStudent.studentName,
+        newStudent.major,
+        newStudent.role,
+      ],
+    );
+
     return newStudent;
   }
 
   async deleteStudent(studentID: string): Promise<void> {
-    this.mockStudents = this.mockStudents.filter(
-      (student) => student.studentID !== studentID,
+    return await this.entityManager.query(
+      `
+      DELETE FROM students
+      WHERE studentID = ?
+    `,
+      [studentID],
     );
   }
 
   private async generateStudentID(): Promise<string> {
-    while (true) {
-      const studentID = 'U' + Math.floor(Math.random() * 100000000);
-      if (
-        !this.mockStudents.find((student) => student.studentID === studentID)
-      ) {
-        return studentID;
-      }
-    }
+    return 'U' + Math.floor(Math.random() * 100000000);
   }
 
   private async generatePassword(): Promise<string> {

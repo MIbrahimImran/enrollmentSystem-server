@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
+import { createStudentDTO } from 'src/dtos/create-student.dto';
 import { Student } from 'src/entities/student.entity';
 import { StudentService } from 'src/services/student.service';
-import { createStudentDTO } from './dtos/create-student.dto';
 
 @Controller('students')
 export class StudentController {
@@ -28,6 +28,7 @@ export class StudentController {
 
   @Post()
   async createStudent(@Body() student: createStudentDTO): Promise<Student> {
+    console.log(student);
     return this.studentService.createStudent(student);
   }
 
