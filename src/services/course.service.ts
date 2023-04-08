@@ -1,13 +1,15 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Course } from 'src/entities/course.entity';
 import { EntityManager } from 'typeorm';
-import { EnrollmentService } from './enrollment.service';
 
 @Injectable()
 export class CourseService {
   constructor(
-    private entityManager: EntityManager,
-    private readonly enrollmentService: EnrollmentService,
+    private entityManager: EntityManager, // private readonly enrollmentService: EnrollmentService,
   ) {}
 
   async getAllCourses(): Promise<Course[]> {
@@ -68,7 +70,7 @@ export class CourseService {
   }
 
   async deleteCourse(courseID: string): Promise<void> {
-    this.enrollmentService.deleteEnrollmentsByCourseID(courseID);
+    this.deleteEnrollmentsByCourseID(courseID);
     await this.entityManager.query(
       `
       DELETE FROM courses
@@ -76,5 +78,19 @@ export class CourseService {
     `,
       [courseID],
     );
+  }
+
+  async deleteEnrollmentsByCourseID(courseID: string): Promise<void> {
+    const result = await this.entityManager.query(
+      `
+      DELETE FROM enrollments
+      WHERE courseID = ?
+    `,
+      [courseID],
+    );
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Enrollment not found');
+    }
   }
 }
